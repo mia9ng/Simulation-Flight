@@ -1,1 +1,2 @@
-# Simulation-Flight
+Problem:
+Consider a passenger airplane with 18 rows of seats, where each row has seats A-F. Suppose that the first passenger who boards the plane chooses a seat randomly without looking at his/her boarding pass. The second person boards the plane and takes his/her assigned seat if it is open, but sits in a random seat if his/her seat is taken. This continues for all 108 passengers. Estimate the probability that the last (108th) passenger who boards the plane will sit in the correct seat by simulating 100 of these flights and counting the proportion of flights in which the 108th passenger ends up in the correct seat. Repeat this process for 1000 flights
