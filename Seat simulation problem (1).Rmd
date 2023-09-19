@@ -1,0 +1,184 @@
+---
+title: "Seat problem"
+author: "mai nguyen"
+date: "NA"
+output:
+  html_document: default
+  pdf_document: default
+---
+Step 1: Create an 18x6 matrix of NAs and label the columns A-F
+```{r}
+set.seed(10000)
+airplane<-matrix(-1,nrow=18,ncol=6)
+dimnames(airplane) <- list(c(),c("A","B","C","D","E","F"))
+airplane #1. Create an 18 × 6 matrix of NAs and label the columns A - F.
+
+paste(1:3,c("A","B","C"),sep="")  #CODE EXAMPLE ONLY
+```
+
+Step 2: Create a passenger list and assign each passenger to a seat (1A to 18F)
+```{r}
+set.seed(10000)
+passenger_seat<-matrix(sample(1:108,replace=FALSE),nrow=18,ncol=6)
+dimnames(passenger_seat) <- list(c(),c("A","B","C","D","E","F"))
+passenger_seat  #2.Create a passenger list and assign each passenger to a seat (1A to 18F).
+#for example, person 2's assigned seat would be 1E
+```
+
+Step 3: Suppose that the first passenger who boards the plane chooses a seat randomly without looking at his/her boarding pass. I will have this person board the plane and sit down in my code
+```{r}
+set.seed(10000)
+first_person<-sample(1:108,1,replace=FALSE)
+first_person # 3. printed out result was 30, so the first person chose seat 1A
+first_person<-airplane
+first_person[1,1]<-0
+first_person
+
+```
+
+Step 4: the second person boards the plane and takes his/her assigned seat if it is open, but sits in a random seat if his/her seat is taken. I will check if the second person's assigned seat is taken. If so, I will have them sit down randomly. If not, I will have them sit in their assigned seat.
+```{r}
+set.seed(10000)
+second_person<-first_person[1,5]#second person's seat 1E, empty now
+second_person
+if(second_person == -1){
+  print('second person sits at assigned seat 1E') #4. second person sits at assigned seat
+}else{
+  print ('second person sits down randomly');
+}
+
+second_person<-first_person
+second_person[1,5]<-0
+second_person
+
+```
+
+Step 5: I will repeat Step 4 for the remaining 108 passengers
+# data.frame: a list of vectors with equal length
+
+```{r}
+set.seed(10000)
+
+airplane<-c(1:108)
+airplane # empty 108 seats
+
+assigned_seat<-sample(1:108,replace=FALSE)
+assigned_seat #assigned seats for 108 passengers
+
+real_seat<-rep(0,108)# how a person would choose their seat
+real_seat
+
+choosing_seat<-data.frame(assigned_seat,airplane,real_seat)
+choosing_seat$real_seat[sample(1:108,1,replace=FALSE)]<- 1  #person 1 chose a random seat 
+
+for (i in 2:108){
+  if(choosing_seat$real_seat[choosing_seat$assigned_seat[i]] == 0){
+    choosing_seat$real_seat[choosing_seat$assigned_seat[i]]== i # if the person's assigned seat is open, the person would sit there
+  } else {
+    choosing_seat$real_seat[which(choosing_seat$real_seat == 0)][sample(1:length(choosing_seat$real_seat[which(choosing_seat$real_seat == 0)]), 1)] == i; # or else, the person would randomly choose a seat among other empty seats
+  }
+}
+```
+
+Step 6: I will record whether or not the last passenger sits in the correct seat
+```{r}
+if(choosing_seat$real_seat[choosing_seat$assigned_seat[108]] == 108){
+    print('108th person sat at assigned seat') 
+  } else {
+    print('108th person did not sit at assigned seat');
+  }
+```
+Step 7: I will repeat the above steps for 100 flights. Then estimate the probability that the last passenger who boards the plane will sit in the correct seat using my 100 simulated flights by counting the proportion of flights in which the 108th passenger ends up in the correct seat
+
+
+```{r}
+YN_assign <- c()
+
+for(a in 1:100){ # repeat step 1-6 for 100 flights
+  
+  airplane<-c(1:108)
+  airplane # empty 108 seats
+
+  assigned_seat<-sample(1:108,replace=FALSE)
+  assigned_seat #assigned seats for 108 passengers
+
+  real_seat<-rep(0,108)# how a person would choose their seat
+  real_seat
+  
+  
+  choosing_seat<-data.frame(assigned_seat, airplane,real_seat)
+  choosing_seat$real_seat[sample(1:108,1,replace=FALSE)]<- 1  #person 1 chose a random seat 
+
+  for (i in 2:108){
+    if(choosing_seat$real_seat[choosing_seat$assigned_seat[i]] == 0){
+      choosing_seat$real_seat[choosing_seat$assigned_seat[i]]== i # if the person's assigned seat is open, the person would sit there
+    } else {
+      choosing_seat$real_seat[which(choosing_seat$real_seat == 0)][sample(1:length(choosing_seat$real_seat[which(choosing_seat$real_seat == 0)]), 1)] == i; # or else, the person would randomly choose a seat among other empty seats
+    }
+  }  
+
+  
+  if(choosing_seat$real_seat[choosing_seat$assigned_seat[108]] == 108) {
+    YN_assign <- append(YN_assign, "Y", after = length(YN_assign)) 
+  } else {
+    YN_assign <- append(YN_assign, "N", after = length(YN_assign)); 
+  }
+  
+}
+
+length(YN_assign)
+length(YN_assign[which(YN_assign == "Y")])
+probability<-length(YN_assign[which(YN_assign == "Y")])/length(YN_assign)
+print(probability)
+```
+
+
+
+Step 8: Estimate this same probability with 1000 flights
+
+
+
+
+```{r}
+YN_assign=c()
+
+for(a in 1:1000){ # repeat for 1000 flights
+  airplane<-c(1:108)
+  airplane # empty 108 seats
+
+  assigned_seat<-sample(1:108,replace=FALSE)
+  assigned_seat #assigned seats for 108 passengers
+
+  real_seat<-rep(0,108)# how a person would choose their seat
+  real_seat
+  
+  
+  choosing_seat<-data.frame(assigned_seat, airplane,real_seat)
+  choosing_seat$real_seat[sample(1:108,1,replace=FALSE)]<- 1  #person 1 chose a random seat 
+
+  for (i in 2:108){
+    if(choosing_seat$real_seat[choosing_seat$assigned_seat[i]] == 0){
+      choosing_seat$real_seat[choosing_seat$assigned_seat[i]]== i # if the person's assigned seat is open, the person would sit there
+    } else {
+      choosing_seat$real_seat[which(choosing_seat$real_seat == 0)][sample(1:length(choosing_seat$real_seat[which(choosing_seat$real_seat == 0)]), 1)] == i; # or else, the person would randomly choose a seat among other empty seats
+    }
+  }  
+
+  if(choosing_seat$real_seat[choosing_seat$assigned_seat[108]] == 108) {
+      
+      YN_assign <- append(YN_assign, "Y", after = length(YN_assign)) 
+      
+    } else {
+      
+      YN_assign <- append(YN_assign, "N", after = length(YN_assign)); 
+      
+  }
+}
+length(YN_assign)
+length(YN_assign[which(YN_assign == "Y")])
+probability<-length(YN_assign[which(YN_assign == "Y")])/length(YN_assign)
+print(probability)
+
+
+```
+
